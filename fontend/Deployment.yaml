@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-library-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:              # tells what pods the deployment will apply to, refer to line number 11 for pod template
+      app: book-library
+  template:                   # actually, this is the pod template, describes a pod that is launched
+    metadata:
+      labels:
+        app: book-library # this should match with the matchLabels value above, otherwise, this kind of pod will not be controlled by the above deployment
+    spec:
+      containers:
+      - name: book-library-container
+        image: devday.azurecr.io/book-library:v1
+        # Add opening port
+        ports:                                      #+
+        - containerPort: 80                       #+
+          name: http                                #+
+        - containerPort: 80                       #+
+          name: http-admin                          #+
+      imagePullSecrets:
+      - name: devday-secret-docker-register
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-library-service
+  #namespace: mhdanh
+spec:
+  type: LoadBalancer
+#  type: NodePort
+  selector:
+    app: book-library
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
