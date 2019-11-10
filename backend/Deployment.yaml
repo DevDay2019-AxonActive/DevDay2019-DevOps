@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend-container
-        image: devday.azurecr.io/devday-backend:v1
+        image: mydevcr.azurecr.io/devday-backend:v1
         # Add opening port
         ports:                                      #+
         - containerPort: 8080                       #+
