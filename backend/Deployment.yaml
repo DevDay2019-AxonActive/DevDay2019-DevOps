@@ -28,6 +28,7 @@ metadata:
   name: backend-service
 spec:
   type: LoadBalancer
+  loadBalancerIP: 52.163.191.19 # comment this like for auto generate ip
 #  type: NodePort
   selector:
     app: devday-backend
