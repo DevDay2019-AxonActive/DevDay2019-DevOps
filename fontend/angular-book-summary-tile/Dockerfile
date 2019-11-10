@@ -1,0 +1,12 @@
+# stage: 1
+FROM node:12 as build-stage
+WORKDIR /app
+COPY . ./
+RUN npm install
+RUN npm run build
+
+# stage: 2 — the production environment
+FROM nginx:alpine
+COPY --from=build-stage /app/dist/book-library /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
