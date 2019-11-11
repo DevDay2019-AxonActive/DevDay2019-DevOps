@@ -7,6 +7,6 @@ RUN npm run build
 
 # stage: 2 — the production environment
 FROM nginx:alpine
-COPY --from=build-stage /app/dist/angular-book-summary-tile /usr/share/nginx/html
+COPY --from=build-stage /app/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
