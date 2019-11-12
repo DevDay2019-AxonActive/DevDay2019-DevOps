@@ -14,13 +14,11 @@ spec:
     spec:
       containers:
       - name: book-library-container
-        image: mydevcr.azurecr.io/book-library:v1
+        image: mydevcr.azurecr.io/book-library:latest
         # Add opening port
         ports:                                      #+
         - containerPort: 80                       #+
           name: http                                #+
-        - containerPort: 80                       #+
-          name: http-admin                          #+
       imagePullSecrets:
       - name: devday-secret-docker-register
 ---
@@ -29,8 +27,8 @@ kind: Service
 metadata:
   name: book-library-service
 spec:
-  type: LoadBalancer
-#  type: NodePort
+#  type: LoadBalancer
+  type: NodePort
   selector:
     app: book-library
   ports:
