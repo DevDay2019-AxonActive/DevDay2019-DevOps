@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: angular-book-summary-tile-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:              # tells what pods the deployment will apply to, refer to line number 11 for pod template
+      app: angular-book-summary-tile
+  template:                   # actually, this is the pod template, describes a pod that is launched
+    metadata:
+      labels:
+        app: angular-book-summary-tile # this should match with the matchLabels value above, otherwise, this kind of pod will not be controlled by the above deployment
+    spec:
+      containers:
+      - name: angular-book-summary-tile-container
+        image: mydevcr.azurecr.io/angular-book-summary-tile:latest
+        # Add opening port
+        ports:                                      #+
+        - containerPort: 80                       #+
+          name: http                                #+
+      imagePullSecrets:
+      - name: devday-secret-docker-register
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: angular-book-summary-tile-service
+spec:
+  type: NodePort
+  selector:
+    app: angular-book-summary-tile
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
