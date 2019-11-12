@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: devday-ingress
+#  namespace: ingress-basic
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: react-book-summary-tile-service
+          servicePort: 80
+        path: /react-book-summary-tile/(.*)
+      - backend:
+          serviceName: angular-book-summary-tile-service
+          servicePort: 80
+        path: /angular-book-summary-tile/(.*)
+      - backend:
+          serviceName: book-library-service
+          servicePort: 80
+        path: /(.*)
