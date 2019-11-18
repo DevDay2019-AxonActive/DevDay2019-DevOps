@@ -1,118 +1,125 @@
 # CREATE RESOURCE
 
-## List all location for create resource
-`az account list-locations`
-
 ## Create resource
 `az group create --name myDevResource --location southeastasia`
-
-## Clean up resource
-This command line will clean up everything under this resource like k8s, database, container register...
-`az group delete --name myDevResource`
+This command will create a new resource group in south east asia.
+> For other location code run this command below
+>
+> `az account list-locations`
+>
+> If you want do delete resource group use this command
+>
+> `az group delete --name myDevResource`
+>
+> With this command everything under this resource will be deleted too such as k8s, database, container register...
 
 
 # CREATE AZURE POSTGRESQL
-https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-azure-cli
-https://docs.microsoft.com/en-us/azure/postgresql/concepts-pricing-tiers
 
-## Create server
+We will create a azure postgres database [Reference link](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-azure-cli)
+
+
+## 1. Create server
+We will create a new postgres server with this command. 
+
 `az postgres server create --resource-group myDevResource --name mydevdaydb  --location southeastasia --admin-user devdayadmin --admin-password Devd@y-2@19 --sku-name B_Gen5_1 --version 9.6`
+> See this link for more information about [Pricing tiers](https://docs.microsoft.com/en-us/azure/postgresql/concepts-pricing-tiers) 
 
-## Config file rule allow IP connect
+## 2. Config file rule allow IP connect
+In order to allow remote connect to this database server we will set ip range for it with this command below
+
 `az postgres server firewall-rule create --resource-group myDevResource --server mydevdaydb --name AllowMyIP --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255`
 
-## Get connection
-az postgres server show --resource-group myDevResource --name mydevdaydb
+> To get detail information of this database try this comamnd
+> 
+> `az postgres server show --resource-group myDevResource --name mydevdaydb`
 
-## psql connect for testing
+## 3. Connect to server via psql and create first database
+
 `psql -U devdayadmin@mydevdaydb -d postgres -h mydevdaydb.postgres.database.azure.com`
 
-## Create db
+> There are some command you can try with psql or [cheat sheet](http://www.postgresqltutorial.com/postgresql-cheat-sheet/)
+>
+> \l list all database
+>
+> \c chose database
+
+### 3.1 Create db
 `CREATE DATABASE devday;`
 
-## Clean up azure postgres
-`az postgres server delete --resource-group myDevResource --name mydevdaydb`
-
-## List all extension from posgres
-`SELECT * FROM pg_available_extensions;`
-
-## Install pgcryto extension
+### 3.2 Install pgcryto extension
+To use **digest function in sql** we have to install the following extension. We have to **select devday database** that you want to install this extension.
+> 
 `create extension pgcrypto;`
+> 
+> List all extension from posgres
+>
+> `SELECT * FROM pg_available_extensions;`
 
 # CREATE CONTAINER REGISTER
 
-## Create container registery
+## 1. Create container registry
+We will create a container registry name myDevCR with this command
+
 `az acr create --resource-group myDevResource --name myDevCR --sku Basic`
 
-## Build And Push Image
-`az acr build -t devday-backend:v1 --registry myDevCR --file Dockerfile .`
+## 2. We clone this backend code
 
-## Build image from docker file in githup
-`wget -O Dockerfile https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/Prod/backend/Dockerfile | az acr build -t devday-backend:v1 --registry myDevCR --file Dockerfile .`
+`git clone https://github.com/DevDay2019-AxonActive/DevDay2019-Performance-Tuning`
 
-## List all container registry
-`az acr list`
+Then we will use this docker file [docker file](https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/Prod/backend/Dockerfile) for building and pushing image to container
 
-## List all images/repository
-`az acr repository list --name myDevCR`
+## 3. Build And Push Image
+`az acr build -t devday-backend:latest --registry myDevCR --file Dockerfile .`
 
-## List all version of image/repository
-`az acr repository show-tags --repository devday-backend --name myDevCR`
+> One single command for getting, build and push iimage
+>
+> `wget -O Dockerfile https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/Prod/backend/Dockerfile | az acr build -t devday-backend:latest --registry myDevCR --file Dockerfile .`
+>
+> Some helpful commands
+>
+> `az acr list` #List all container registry 
+>
+> `az acr repository list --name myDevCR` #List all images/repository
+>
+> `az acr repository show-tags --repository devday-backend --name myDevCR` #List all version of image/repository
+
 
 # CREATE K8S
-## register provider
+## 1. register provider
 `az provider register --namespace Microsoft.Network`
 
-## create k8s
+## 2. create k8s
 `az aks create --resource-group myDevResource --name myK8s --node-count 1 --location southeastasia`
 
-## Get credential
-`az aks get-credentials --resource-group myDevResource --name myK8s`
-
-
-# Create Secret key for pull image in deployment
-## Enable admin first
-`az acr update -n myDevCR --admin-enabled true`
-
-## Show credential
-`az acr credential show -n myDevCR`
-
-## Create a Secret to hold the registry credentials.
-`kubectl create secret docker-registry devday-secret-docker-register --docker-server=mydevcr.azurecr.io --docker-username=myDevCR --docker-password=NgfU4sw1lYHKKxTjRgO+oUuqhcQApPtO`
-
-- username and password from ## Show credential
-
-```
-  imagePullSecrets:
-
-- name: devday-secret-docker-register
-```
-
-> Note: there is a alternative way to pull image from k8s just run the following command so that we dont need.
-
+## 3. Connect k8s to container register for pulling image and deploy it
 `az aks update -n myK8s -g myDevResource --attach-acr myDevCR`
 
 # DEPLOY TO K8S
 
-## deploy with deployment
-`kubectl apply -f Deployment.yaml`
+After creating cluster we can create a yaml file for deployment
+
+## 1. deploy with deployment
 `kubectl apply -f https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/master/backend/Deployment.yaml`
 
-## check log pod
-`kebectl get pods`
-`kubectl describe pod backend-deployment-5b66cdd474-6vnrt`
 
-## check log container
-`kubectl logs pod backend-deployment-5b66cdd474-6vnrt`
+> Some command for troubleshooting
+> `kebectl get pods` #Get all pod that running  
+> `kubectl describe pod [podname]` #Check log of pod
+> `kubectl logs pod [podname]` #Check log of application(container)
 
 # CREATE STATIC IP
-## Get NodeResourceGroup
+
+Everytime we expose container to the internet k8s will reserve a different ip for you. So that in case we want to have a static ip for every time deploy we can this these steps below
+
+## 1. Get NodeResourceGroup
+This static ip must be in the same group of node so that we have to get node resource group first.
+
 `az aks show --resource-group myDevResource --name myK8s --query nodeResourceGroup -o tsv`
 
-## Create static public ip
-`az network public-ip create --resource-group MC_myDevResource_myK8s_southeastasia --name myAKSPublicIP --allocation-method static --sku Standard`
-
+## 2. Create static public ip
 > note: public ip must be in standard sku
 
-## Show static public ip
-`az network public-ip list`
+`az network public-ip create --resource-group MC_myDevResource_myK8s_southeastasia --name myAKSPublicIP --allocation-method static --sku Standard`
+ 
+> `az network public-ip list` #Show all static public ip
