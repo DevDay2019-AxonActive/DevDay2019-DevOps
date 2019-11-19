@@ -33,7 +33,7 @@ We will create a azure postgres database [Reference link](https://docs.microsoft
 ## 1. Create server
 We will create a new postgres server with this command. 
 
-`az postgres server create --resource-group myDevResource --name mydevdaydb  --location southeastasia --admin-user devdayadmin --admin-password Devd@y-2@19 --sku-name B_Gen5_1 --version 9.6`
+`az postgres server create --resource-group myDevResource --name [serverName]  --location southeastasia --admin-user devdayadmin --admin-password Devd@y-2@19 --sku-name B_Gen5_1 --version 9.6`
 > See this link for more information about [Pricing tiers](https://docs.microsoft.com/en-us/azure/postgresql/concepts-pricing-tiers) 
 
 ## 2. Config file rule allow IP connect
@@ -70,9 +70,9 @@ To use **digest function in sql** we have to install the following extension. We
 # CREATE CONTAINER REGISTER
 
 ## 1. Create container registry
-We will create a container registry name myDevCR with this command
+We will create a container registry name [containerRegistryName] with this command
 
-`az acr create --resource-group myDevResource --name myDevCR --sku Basic`
+`az acr create --resource-group myDevResource --name [containerRegistryName] --sku Basic`
 
 ## 2. We clone this backend code
 
