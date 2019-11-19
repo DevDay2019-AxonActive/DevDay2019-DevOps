@@ -19,8 +19,6 @@ spec:
         ports:                                      #+
         - containerPort: 80                       #+
           name: http                                #+
-      imagePullSecrets:
-      - name: devday-secret-docker-register
 ---
 apiVersion: v1
 kind: Service
