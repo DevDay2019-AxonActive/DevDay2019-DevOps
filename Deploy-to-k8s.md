@@ -11,7 +11,7 @@ We keep them simplier in the following instruction. Now let's get started
 # CREATE RESOURCE
 
 ## Create resource
-`az group create --name myDevResource --location southeastasia`
+`az group create --name [myDevResource] --location southeastasia`
 
 This command will create a new resource group in south east asia.
 > For other location code run this command below
@@ -20,7 +20,7 @@ This command will create a new resource group in south east asia.
 >
 > If you want do delete resource group use this command
 >
-> `az group delete --name myDevResource`
+> `az group delete --name [myDevResource]`
 >
 > With this command everything under this resource will be deleted too such as k8s, database, container register...
 
@@ -33,17 +33,17 @@ We will create a azure postgres database [Reference link](https://docs.microsoft
 ## 1. Create server
 We will create a new postgres server with this command. 
 
-`az postgres server create --resource-group myDevResource --name [serverName]  --location southeastasia --admin-user devdayadmin --admin-password Devd@y-2@19 --sku-name B_Gen5_1 --version 9.6`
+`az postgres server create --resource-group [myDevResource] --name [serverName]  --location southeastasia --admin-user devdayadmin --admin-password Devd@y-2@19 --sku-name B_Gen5_1 --version 9.6`
 > See this link for more information about [Pricing tiers](https://docs.microsoft.com/en-us/azure/postgresql/concepts-pricing-tiers) 
 
 ## 2. Config file rule allow IP connect
 In order to allow remote connect to this database server we will set ip range for it with this command below
 
-`az postgres server firewall-rule create --resource-group myDevResource --server [serverName] --name AllowMyIP --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255`
+`az postgres server firewall-rule create --resource-group [myDevResource] --server [serverName] --name AllowMyIP --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255`
 
 > To get detail information of this database try this comamnd
 > 
-> `az postgres server show --resource-group myDevResource --name [serverName]`
+> `az postgres server show --resource-group [myDevResource] --name [serverName]`
 
 ## 3. Connect to server via psql and create first database
 
@@ -72,7 +72,7 @@ To use **digest function in sql** we have to install the following extension. We
 ## 1. Create container registry
 We will create a container registry name [containerRegistryName] with this command
 
-`az acr create --resource-group myDevResource --name [containerRegistryName] --sku Basic`
+`az acr create --resource-group [myDevResource] --name [containerRegistryName] --sku Basic`
 
 ## 2. We clone this backend code
 
@@ -80,7 +80,10 @@ We will create a container registry name [containerRegistryName] with this comma
 
 Then we will use this docker file [docker file](https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/Prod/backend/Dockerfile) for building and pushing image to container
 
+
 ## 3. Build And Push Image
+Before building your image please make sure that your application.properties has correct your database connection If not we have to change it first.
+
 `az acr build -t devday-backend:latest --registry [containerRegistryName] --file Dockerfile .`
 
 > One single command for getting, build and push iimage
@@ -101,10 +104,13 @@ Then we will use this docker file [docker file](https://raw.githubusercontent.co
 `az provider register --namespace Microsoft.Network`
 
 ## 2. create k8s
-`az aks create --resource-group myDevResource --name myK8s --node-count 1 --enable-addons monitoring --generate-ssh-keys --location southeastasia`
+`az aks create --resource-group [myDevResource] --name myK8s --node-count 1 --enable-addons monitoring --generate-ssh-keys --location southeastasia`
 
 ## 3. Connect k8s to container register for pulling image and deploy it
-`az aks update -n myK8s -g myDevResource --attach-acr myDevCR`
+`az aks update -n myK8s -g [myDevResource] --attach-acr myDevCR`
+
+## 4. Connect to cluster
+`az aks get-credentials --resource-group [myDevResource] --name myK8s`
 
 # DEPLOY TO K8S
 
@@ -126,11 +132,11 @@ Everytime we expose container to the internet k8s will reserve a different ip fo
 ## 1. Get NodeResourceGroup
 This static ip must be in the same group of node so that we have to get node resource group first.
 
-`az aks show --resource-group myDevResource --name myK8s --query nodeResourceGroup -o tsv`
+`az aks show --resource-group [myDevResource] --name myK8s --query nodeResourceGroup -o tsv`
 
 ## 2. Create static public ip
 > note: public ip must be in standard sku
 
-`az network public-ip create --resource-group MC_myDevResource_myK8s_southeastasia --name myAKSPublicIP --allocation-method static --sku Standard`
+`az network public-ip create --resource-group MC_[myDevResource]_myK8s_southeastasia --name myAKSPublicIP --allocation-method static --sku Standard`
  
 > `az network public-ip list` #Show all static public ip
