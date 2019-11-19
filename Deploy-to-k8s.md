@@ -12,6 +12,7 @@ We keep them simplier in the following instruction. Now let's get started
 
 ## Create resource
 `az group create --name myDevResource --location southeastasia`
+
 This command will create a new resource group in south east asia.
 > For other location code run this command below
 >
