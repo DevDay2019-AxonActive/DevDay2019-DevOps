@@ -39,15 +39,15 @@ We will create a new postgres server with this command.
 ## 2. Config file rule allow IP connect
 In order to allow remote connect to this database server we will set ip range for it with this command below
 
-`az postgres server firewall-rule create --resource-group myDevResource --server mydevdaydb --name AllowMyIP --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255`
+`az postgres server firewall-rule create --resource-group myDevResource --server [serverName] --name AllowMyIP --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255`
 
 > To get detail information of this database try this comamnd
 > 
-> `az postgres server show --resource-group myDevResource --name mydevdaydb`
+> `az postgres server show --resource-group myDevResource --name [serverName]`
 
 ## 3. Connect to server via psql and create first database
 
-`psql -U devdayadmin@mydevdaydb -d postgres -h mydevdaydb.postgres.database.azure.com`
+`psql -U devdayadmin@mydevdaydb -d postgres -h [serverName].postgres.database.azure.com`
 
 > There are some command you can try with psql or [cheat sheet](http://www.postgresqltutorial.com/postgresql-cheat-sheet/)
 >
@@ -81,19 +81,19 @@ We will create a container registry name [containerRegistryName] with this comma
 Then we will use this docker file [docker file](https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/Prod/backend/Dockerfile) for building and pushing image to container
 
 ## 3. Build And Push Image
-`az acr build -t devday-backend:latest --registry myDevCR --file Dockerfile .`
+`az acr build -t devday-backend:latest --registry [containerRegistryName] --file Dockerfile .`
 
 > One single command for getting, build and push iimage
 >
-> `wget -O Dockerfile https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/Prod/backend/Dockerfile | az acr build -t devday-backend:latest --registry myDevCR --file Dockerfile .`
+> `wget -O Dockerfile https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/Prod/backend/Dockerfile | az acr build -t devday-backend:latest --registry [containerRegistryName] --file Dockerfile .`
 >
 > Some helpful commands
 >
 > `az acr list` #List all container registry 
 >
-> `az acr repository list --name myDevCR` #List all images/repository
+> `az acr repository list --name [containerRegistryName]` #List all images/repository
 >
-> `az acr repository show-tags --repository devday-backend --name myDevCR` #List all version of image/repository
+> `az acr repository show-tags --repository devday-backend --name [containerRegistryName]` #List all version of image/repository
 
 
 # CREATE K8S
