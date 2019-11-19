@@ -14,13 +14,11 @@ spec:
     spec:
       containers:
       - name: backend-container
-        image: mydevcr.azurecr.io/devday-backend:v1
+        image: mydevcr.azurecr.io/devday-backend:latest
         # Add opening port
         ports:                                      #+
         - containerPort: 8080                       #+
           name: http                                #+
-      imagePullSecrets:
-      - name: devday-secret-docker-register
 ---
 apiVersion: v1
 kind: Service
@@ -28,7 +26,7 @@ metadata:
   name: backend-service
 spec:
   type: LoadBalancer
-  loadBalancerIP: 52.163.191.19 # comment this like for auto generate ip
+#  loadBalancerIP: 52.163.191.19 # comment this like for auto generate ip
 #  type: NodePort
   selector:
     app: devday-backend
