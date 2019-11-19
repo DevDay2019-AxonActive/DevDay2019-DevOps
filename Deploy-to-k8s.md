@@ -1,3 +1,13 @@
+In this instruction we will learn how to deploy a spring boot backend to kubenertes. There are 4 important parts you need to follow.
+1. Create resource group( this resource like a project that will content other thing like k8s, database, container registry)
+2. Create azure [postgres database](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-azure-cli)
+3. Create [container registry](https://docs.microsoft.com/bs-cyrl-ba/azure/container-registry/container-registry-quickstart-task-cli) (where we store our images for deployment to k8s)
+4. Create [k8s cluster](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough) (where we can run and expose our application to the internet)
+5. Create [public static ip](https://docs.microsoft.com/en-us/azure/aks/static-ip) for k8s(we will have a fixed ip for get things easier)
+
+We keep them simplier in the following instruction. Now let's get started
+
+
 # CREATE RESOURCE
 
 ## Create resource
@@ -90,7 +100,7 @@ Then we will use this docker file [docker file](https://raw.githubusercontent.co
 `az provider register --namespace Microsoft.Network`
 
 ## 2. create k8s
-`az aks create --resource-group myDevResource --name myK8s --node-count 1 --location southeastasia`
+`az aks create --resource-group myDevResource --name myK8s --node-count 1 --enable-addons monitoring --generate-ssh-keys --location southeastasia`
 
 ## 3. Connect k8s to container register for pulling image and deploy it
 `az aks update -n myK8s -g myDevResource --attach-acr myDevCR`
