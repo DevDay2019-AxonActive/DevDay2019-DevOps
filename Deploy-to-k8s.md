@@ -8,6 +8,9 @@ In this instruction we will learn how to deploy a spring boot backend to kubener
 We keep them simplier in the following instruction. Now let's get started
 
 
+Open azure cloud shell in azure portal website
+![](https://docs.microsoft.com/en-us/azure/cloud-shell/media/overview/overview-bash-pic.png)
+
 # CREATE RESOURCE
 
 ## Create resource
