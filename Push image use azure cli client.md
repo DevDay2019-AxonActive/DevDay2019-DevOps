@@ -34,4 +34,18 @@ Then you can push this image to registry by command docker push
 
 `docker push <acrLoginServer>/hello-world:v1`
 
+# Create k8s
+
+`az aks create --resource-group [myDevResource] --name [myAKSCluster] --node-count 1 --enable-addons monitoring --generate-ssh-keys`
+
+Connect k8s to container registry for access image from container registry
+
+`az aks update -n [myAKSCluster] -g [myDevResource] --attach-acr [myContainerRegistry]`
+
+Insctall kubectl 
+`az aks install-cli`
+
+Get credential for using kubectl cli
+
+`az aks get-credentials --resource-group [myDevResource] --name [myAKSCluster]`
 
