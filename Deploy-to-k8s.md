@@ -36,10 +36,10 @@ We will create a azure postgres database [Reference link](https://docs.microsoft
 ## 1. Create server
 We will create a new postgres server with this command. 
 
-`az postgres server create --resource-group [myDevResource] --name [serverName]  --location southeastasia --admin-user devdayadmin --admin-password Devd@y-2@19 --sku-name B_Gen5_1 --version 9.6`
+`az postgres server create --resource-group [myDevResource] --name [serverName]  --location southeastasia --admin-user [devdayadmin] --admin-password [Devd@y-2@19] --sku-name B_Gen5_1 --version 9.6`
 > See this link for more information about [Pricing tiers](https://docs.microsoft.com/en-us/azure/postgresql/concepts-pricing-tiers) 
 
-## 2. Config file rule allow IP connect
+## 2. Config firewall rule to allow IP connect
 In order to allow remote connect to this database server we will set ip range for it with this command below
 
 `az postgres server firewall-rule create --resource-group [myDevResource] --server [serverName] --name AllowMyIP --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255`
@@ -50,7 +50,7 @@ In order to allow remote connect to this database server we will set ip range fo
 
 ## 3. Connect to server via psql and create first database
 
-`psql -U devdayadmin@mydevdaydb -d postgres -h [serverName].postgres.database.azure.com`
+`psql -U [devdayadmin]@[serverName] -d postgres -h [serverName].postgres.database.azure.com`
 
 > There are some command you can try with psql or [cheat sheet](http://www.postgresqltutorial.com/postgresql-cheat-sheet/)
 >
@@ -81,7 +81,7 @@ We will create a container registry name [containerRegistryName] with this comma
 
 `git clone https://github.com/DevDay2019-AxonActive/DevDay2019-Performance-Tuning`
 
-Then we will use this docker file [docker file](https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/Prod/backend/Dockerfile) for building and pushing image to container
+Then we will use this docker file [docker file](https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/master/backend/Dockerfile) for building and pushing image to container
 
 
 ## 3. Build And Push Image
@@ -91,7 +91,7 @@ Before building your image please make sure that your application.properties has
 
 > One single command for getting, build and push iimage
 >
-> `wget -O Dockerfile https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/Prod/backend/Dockerfile | az acr build -t devday-backend:latest --registry [containerRegistryName] --file Dockerfile .`
+> `wget -O Dockerfile https://raw.githubusercontent.com/DevDay2019-AxonActive/DevDay2019-DevOps/master/backend/Dockerfile | az acr build -t devday-backend:latest --registry [containerRegistryName] --file Dockerfile .`
 >
 > Some helpful commands
 >
@@ -107,13 +107,13 @@ Before building your image please make sure that your application.properties has
 `az provider register --namespace Microsoft.Network`
 
 ## 2. create k8s
-`az aks create --resource-group [myDevResource] --name myK8s --node-count 1 --enable-addons monitoring --generate-ssh-keys --location southeastasia`
+`az aks create --resource-group [myDevResource] --name [myK8s] --node-count 1 --enable-addons monitoring --generate-ssh-keys --location southeastasia`
 
 ## 3. Connect k8s to container register for pulling image and deploy it
-`az aks update -n myK8s -g [myDevResource] --attach-acr myDevCR`
+`az aks update -n [myK8s] -g [myDevResource] --attach-acr [containerRegistryName]`
 
-## 4. Connect to cluster
-`az aks get-credentials --resource-group [myDevResource] --name myK8s`
+## 4. Connect to cluster for using kubectl
+`az aks get-credentials --resource-group [myDevResource] --name [myK8s]`
 
 # DEPLOY TO K8S
 
@@ -135,11 +135,11 @@ Everytime we expose container to the internet k8s will reserve a different ip fo
 ## 1. Get NodeResourceGroup
 This static ip must be in the same group of node so that we have to get node resource group first.
 
-`az aks show --resource-group [myDevResource] --name myK8s --query nodeResourceGroup -o tsv`
+`az aks show --resource-group [myDevResource] --name [myK8s] --query nodeResourceGroup -o tsv`
 
 ## 2. Create static public ip
 > note: public ip must be in standard sku
 
-`az network public-ip create --resource-group MC_[myDevResource]_myK8s_southeastasia --name myAKSPublicIP --allocation-method static --sku Standard`
+`az network public-ip create --resource-group MC_[myDevResource]_[myK8s_southeastasia] --name myAKSPublicIP --allocation-method static --sku Standard`
  
 > `az network public-ip list` #Show all static public ip
