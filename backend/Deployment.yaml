@@ -20,11 +20,11 @@ spec:
         - containerPort: 8080                       #+
           name: http                                #+
         env:
-        - name: DATASOURCE_URL
+        - name: SPRING_DATASOURCE_URL
           value: "jdbc:postgresql://mhdanhdb.postgres.database.azure.com:5432/devday"
-        - name: DATASOURCE_USERNAME
+        - name: SPRING_DATASOURCE_USERNAME
           value: "devdayadmin@mydevdaydb"
-        - name: DATASOURCE_PASSWORD
+        - name: SPRING_DATASOURCE_PASSWORD
           value: "Devd@y-2@19"
 ---
 apiVersion: v1
